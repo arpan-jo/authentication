@@ -19,6 +19,7 @@ function App() {
     });
 
     const provider = new firebase.auth.GoogleAuthProvider();
+    const fbProvider = new firebase.auth.FacebookAuthProvider();
     const handleSignIn = () => {
         firebase
             .auth()
@@ -123,6 +124,27 @@ function App() {
             });
     };
 
+    const handleFbSignIn = e => {
+        firebase
+            .auth()
+            .signInWithPopup(fbProvider)
+            .then(result => {
+                const credential = result.credential;
+                const accessToken = credential.accessToken;
+                const user = result.user;
+
+                console.log('fb user', user);
+            })
+            .catch(error => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.email;
+                const credential = error.credential;
+                console.log(errorCode, errorMessage, email, credential);
+            });
+        e.preventDefault();
+    };
+
     return (
         <div className="App">
             {!user.isSignIn ? (
@@ -131,7 +153,7 @@ function App() {
                 <button onClick={handleSignOut}>Sign out</button>
             )}
             <br />
-            <button>Sign in using Facebook</button>
+            <button onClick={handleFbSignIn}>Sign in using Facebook</button>
             {user.isSignIn && (
                 <div>
                     <p>Welcome {user.name}</p>
